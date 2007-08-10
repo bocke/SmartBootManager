@@ -1,0 +1,306 @@
+#
+# Smart BootManager themes Makefile
+#
+# Copyright (c) Suzhe 2000
+#
+
+ifeq ($(ASM),)
+ASM=		nasm
+endif
+
+KEYMAPS=	azerty.kbd qwertz.kbd dvorak.kbd dvorak-ansi.kbd
+THEME_DEPS=	$(KEYMAPS)
+
+ifeq ($(DEST_DIR),)
+DEST_DIR=	../../release
+endif
+
+ifeq ($(THEME_FR),)
+THEME_FR=		$(DEST_DIR)/theme-fr
+endif
+
+THEME_FR_QWERTY=	$(THEME_FR)-qwerty
+THEME_FR_QWERTZ=	$(THEME_FR)-qwertz
+THEME_FR_AZERTY=	$(THEME_FR)-azerty
+THEME_FR_DVORAK=	$(THEME_FR)-dvorak
+THEME_FR_DVORAK_ANSI=	$(THEME_FR)-dvorak-ansi
+
+ifeq ($(THEME_ES),)
+THEME_ES=		$(DEST_DIR)/theme-es
+endif
+
+THEME_ES_QWERTZ=	$(THEME_ES)-qwertz
+THEME_ES_AZERTY=	$(THEME_ES)-azerty
+THEME_ES_DVORAK=	$(THEME_ES)-dvorak
+THEME_ES_DVORAK_ANSI=	$(THEME_ES)-dvorak-ansi
+
+ifeq ($(THEME_CZ),)
+THEME_CZ=		$(DEST_DIR)/theme-cz
+endif
+
+THEME_CZ_QWERTZ=	$(THEME_CZ)-qwertz
+THEME_CZ_AZERTY=	$(THEME_CZ)-azerty
+THEME_CZ_DVORAK=	$(THEME_CZ)-dvorak
+THEME_CZ_DVORAK_ANSI=	$(THEME_CZ)-dvorak-ansi
+
+ifeq ($(THEME_RU),)
+THEME_RU=		$(DEST_DIR)/theme-ru
+endif
+
+THEME_RU_QWERTZ=	$(THEME_RU)-qwertz
+THEME_RU_AZERTY=	$(THEME_RU)-azerty
+THEME_RU_DVORAK=	$(THEME_RU)-dvorak
+THEME_RU_DVORAK_ANSI=	$(THEME_RU)-dvorak-ansi
+
+
+ifeq ($(THEME_HU),)
+THEME_HU=		$(DEST_DIR)/theme-hu
+endif
+
+THEME_HU_QWERTZ=	$(THEME_HU)-qwertz
+THEME_HU_AZERTY=	$(THEME_HU)-azerty
+THEME_HU_DVORAK=	$(THEME_HU)-dvorak
+THEME_HU_DVORAK_ANSI=	$(THEME_HU)-dvorak-ansi
+
+ifeq ($(THEME_DE),)
+THEME_DE=		$(DEST_DIR)/theme-de
+endif
+
+THEME_DE_QWERTY=	$(THEME_DE)-qwerty
+THEME_DE_QWERTZ=	$(THEME_DE)-qwertz
+THEME_DE_AZERTY=	$(THEME_DE)-azerty
+THEME_DE_DVORAK=	$(THEME_DE)-dvorak
+THEME_DE_DVORAK_ANSI=	$(THEME_DE)-dvorak-ansi
+
+ifeq ($(THEME_US),)
+THEME_US=		$(DEST_DIR)/theme-us
+endif
+
+THEME_US_AZERTY=	$(THEME_US)-azerty
+THEME_US_QWERTZ=	$(THEME_US)-qwertz
+THEME_US_DVORAK=	$(THEME_US)-dvorak
+THEME_US_DVORAK_ANSI=	$(THEME_US)-dvorak-ansi
+
+ifeq ($(THEME_ZH),)
+THEME_ZH=		$(DEST_DIR)/theme-zh
+endif
+
+THEME_ZH_AZERTY=	$(THEME_ZH)-azerty
+THEME_ZH_QWERTZ=	$(THEME_ZH)-qwertz
+THEME_ZH_DVORAK=	$(THEME_ZH)-dvorak
+THEME_ZH_DVORAK_ANSI=	$(THEME_ZH)-dvorak-ansi
+
+ifeq ($(THEME_PT),)
+THEME_PT=		$(DEST_DIR)/theme-pt
+endif
+
+THEME_PT_AZERTY=	$(THEME_PT)-azerty
+THEME_PT_QWERTZ=	$(THEME_PT)-qwertz
+THEME_PT_DVORAK=	$(THEME_PT)-dvorak
+THEME_PT_DVORAK_ANSI=	$(THEME_PT)-dvorak-ansi
+
+
+TARGET_FR_DEPS=	theme-fr.asm $(THEME_DEPS)
+TARGET_FR=	$(THEME_FR) $(THEME_FR_QWERTZ) $(THEME_FR_AZERTY) \
+		$(THEME_FR_DVORAK) $(THEME_FR_DVORAK_ANSI) \
+		$(THEME_FR_QWERTY)
+
+TARGET_ES_DEPS=	theme-es.asm $(THEME_DEPS)
+TARGET_ES=	$(THEME_ES) $(THEME_ES_QWERTZ) $(THEME_ES_AZERTY) \
+		$(THEME_ES_DVORAK) $(THEME_ES_DVORAK_ANSI)
+
+TARGET_CZ_DEPS=	theme-cz.asm $(THEME_DEPS)
+TARGET_CZ=	$(THEME_CZ) $(THEME_CZ_QWERTZ) $(THEME_CZ_AZERTY) \
+		$(THEME_CZ_DVORAK) $(THEME_CZ_DVORAK_ANSI)
+
+TARGET_RU_DEPS=	theme-ru.asm $(THEME_DEPS)
+TARGET_RU=	$(THEME_RU) $(THEME_RU_QWERTZ) $(THEME_RU_AZERTY) \
+		$(THEME_RU_DVORAK) $(THEME_RU_DVORAK_ANSI)
+
+TARGET_HU_DEPS=	theme-hu.asm $(THEME_DEPS)
+TARGET_HU=	$(THEME_HU) $(THEME_HU_QWERTZ) $(THEME_HU_AZERTY) \
+		$(THEME_HU_DVORAK) $(THEME_HU_DVORAK_ANSI)
+
+TARGET_DE_DEPS=	theme-de.asm $(THEME_DEPS)
+TARGET_DE=	$(THEME_DE) $(THEME_DE_QWERTZ) $(THEME_DE_AZERTY) \
+		$(THEME_DE_DVORAK) $(THEME_DE_DVORAK_ANSI) $(THEME_DE_QWERTY)
+
+TARGET_US_DEPS=	theme-us.asm $(THEME_DEPS)
+TARGET_US=	$(THEME_US) $(THEME_US_AZERTY) $(THEME_US_QWERTZ) \
+		$(THEME_US_DVORAK) $(THEME_US_DVORAK_ANSI)
+
+TARGET_ZH_DEPS=	theme-zh.asm $(THEME_DEPS)
+TARGET_ZH=	$(THEME_ZH) $(THEME_ZH_AZERTY) $(THEME_ZH_QWERTZ) \
+		$(THEME_ZH_DVORAK) $(THEME_ZH_DVORAK_ANSI)
+
+TARGET_PT_DEPS=	theme-pt.asm $(THEME_DEPS)
+TARGET_PT=	$(THEME_PT) $(THEME_PT_AZERTY) $(THEME_PT_QWERTZ) \
+		$(THEME_PT_DVORAK) $(THEME_PT_DVORAK_ANSI)
+
+TARGETS=	$(TARGET_FR) $(TARGET_ES) $(TARGET_CZ) $(TARGET_RU) $(TARGET_HU) \
+		$(TARGET_DE) $(TARGET_US) $(TARGET_ZH) $(TARGET_PT)
+
+all: $(TARGETS)
+
+#French theme
+$(THEME_FR): $(TARGET_FR_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_FR_QWERTY): $(TARGET_FR_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_FR_AZERTY): $(TARGET_FR_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_FR_QWERTZ): $(TARGET_FR_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_FR_DVORAK): $(TARGET_FR_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_FR_DVORAK_ANSI): $(TARGET_FR_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+#Spanish theme
+$(THEME_ES): $(TARGET_ES_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_ES_AZERTY): $(TARGET_ES_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_ES_QWERTZ): $(TARGET_ES_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_ES_DVORAK): $(TARGET_ES_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_ES_DVORAK_ANSI): $(TARGET_ES_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+# Czech theme
+$(THEME_CZ): $(TARGET_CZ_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_CZ_AZERTY): $(TARGET_CZ_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_CZ_QWERTZ): $(TARGET_CZ_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_CZ_DVORAK): $(TARGET_CZ_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_CZ_DVORAK_ANSI): $(TARGET_CZ_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+# Russian theme
+$(THEME_RU): $(TARGET_RU_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_RU_AZERTY): $(TARGET_RU_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_RU_QWERTZ): $(TARGET_RU_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_RU_DVORAK): $(TARGET_RU_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_RU_DVORAK_ANSI): $(TARGET_RU_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+#Hungarian theme
+$(THEME_HU): $(TARGET_HU_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_HU_AZERTY): $(TARGET_HU_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_HU_QWERTZ): $(TARGET_HU_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_HU_DVORAK): $(TARGET_HU_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_HU_DVORAK_ANSI): $(TARGET_HU_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+#German theme
+$(THEME_DE): $(TARGET_DE_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_DE_QWERTY): $(TARGET_DE_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_DE_AZERTY): $(TARGET_DE_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_DE_QWERTZ): $(TARGET_DE_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_DE_DVORAK): $(TARGET_DE_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_DE_DVORAK_ANSI): $(TARGET_DE_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+#English theme
+$(THEME_US): $(TARGET_US_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_US_AZERTY): $(TARGET_US_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_US_QWERTZ): $(TARGET_US_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_US_DVORAK): $(TARGET_US_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_US_DVORAK_ANSI): $(TARGET_US_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+#Chinese theme
+$(THEME_ZH): $(TARGET_ZH_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_ZH_AZERTY): $(TARGET_ZH_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $<
+
+$(THEME_ZH_QWERTZ): $(TARGET_ZH_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_ZH_DVORAK): $(TARGET_ZH_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_ZH_DVORAK_ANSI): $(TARGET_ZH_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+#Portuguese theme
+$(THEME_PT): $(TARGET_PT_DEPS)
+	$(ASM) -fbin -o $@ $<
+
+$(THEME_PT_AZERTY): $(TARGET_PT_DEPS)
+	$(ASM) -DKEYMAP_AZERTY -fbin -o $@ $< 
+
+$(THEME_PT_QWERTZ): $(TARGET_PT_DEPS)
+	$(ASM) -DKEYMAP_QWERTZ -fbin -o $@ $<
+
+$(THEME_PT_DVORAK): $(TARGET_PT_DEPS)
+	$(ASM) -DKEYMAP_DVORAK -fbin -o $@ $<
+
+$(THEME_PT_DVORAK_ANSI): $(TARGET_PT_DEPS)
+	$(ASM) -DKEYMAP_DVORAK_ANSI -fbin -o $@ $<
+
+
+install: all
+	-@mkdir -p $(THEME_DIR)
+	-@cp -f $(TARGETS) $(THEME_DIR)
+
+uninstall:
+	-@rm -fr $(THEME_DIR)
+
+.PHONY: clean
+clean:
+	-@rm -f *~ core *.out *.o *.bak *.bkp
+

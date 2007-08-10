@@ -1,0 +1,4 @@
+for i in $*; do
+  sed -e "s/3\.7\.1/3\.90\.1/g" $i > $i.new;
+  rm -f $i; mv $i.new $i;
+done

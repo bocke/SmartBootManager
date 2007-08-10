@@ -1,0 +1,9 @@
+; keymap for QWERTZ keyboard
+
+dw 0x1579, 0x2C7A             ; z <-> y
+dw 0x2C7A, 0x1579
+dw 0x1559, 0x2C5A             ; Z <-> Y
+dw 0x2C5A, 0x1559
+dw 0x1519, 0x2C1A             ; ctrl-z <-> ctrl-y
+dw 0x2C1A, 0x1519
+
