@@ -1,3 +1,29 @@
+; 
+; 
+; Smart Boot Manager
+; 
+; 
+;  developed by
+;    
+;       Peter Kleissner
+;       Vienna Computer Products
+;       Suzhe
+;       Christopher Li
+;       Risko Gergely
+;       Victor O`Muerte
+;       Dirk Knop
+;       Lenart Janos
+;       Frédéric Bonnaud
+;       brz
+;       Manuel Clos
+;       Benoit Mortier
+;       Bill Hults
+;       Andr Maldonado
+;       Santiago Garcia Mantinan
+;       
+;       Thank you all.
+;       
+
 ; asmsyntax=nasm
 ;
 ; main.asm
@@ -7,6 +33,14 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ; Copyright (C) 2001, Suzhe. See file COPYING for details.
 ;
+
+; optional Assembly:
+; 
+;   EMULATE_PROG
+;       if defined, creates DOS executable Test-vesions
+; 
+;   THEME_ZH, THEME_DE, THEME_HU, THEME_RU, THEME_CZ, THEME_ES, THEME_FR, THEME_PT, else US
+;       language themes
 
 %define MAIN
 %define HAVE_MAIN_PROG
@@ -844,10 +878,18 @@ theme_start:
 %endif
 
 end_of_sbm:
+SIZE_OF_SBMK equ ($-$$)
+
+%ifndef EMULATE_PROG
+
+  times 63*512-($-$$) db 0
+
+%endif
+
+
 ;=============================================================================
 ; temp data area
 ;=============================================================================
-SIZE_OF_SBMK equ ($-$$)
 	section .bss
 
 %ifndef EMULATE_PROG
