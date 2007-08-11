@@ -41,10 +41,17 @@
 ; 
 ;   THEME_ZH, THEME_DE, THEME_HU, THEME_RU, THEME_CZ, THEME_ES, THEME_FR, THEME_PT, else US
 ;       language themes
+;   
+;   DISABLE_CDBOOT
+;       disables CD Boot and initialization of it
 
-%define MAIN
-%define HAVE_MAIN_PROG
-;%define EMULATE_PROG
+
+; compile 16 bit code (Real Mode) and beware backward compatibility down to 386er
+[bits 16]
+CPU 386
+
+
+;%define MAIN
 
 %include "macros.h"
 %include "ui.h"
@@ -59,32 +66,6 @@
 %define FIRST_VISIBLE_RECORD  (main_windows_data.boot_menu + struc_menu_box.first_visible_item)
 %define BOOT_MENU_AREA_HEIGHT (main_windows_data.boot_menu + struc_menu_box.menu_area_size + 1) 
 
-%define ADDR_SBMK_MAGIC            (sbmk_header + struc_sbmk_header.magic)
-%define ADDR_SBMK_VERSION          (sbmk_header + struc_sbmk_header.version)
-%define ADDR_SBMK_TOTAL_SIZE       (sbmk_header + struc_sbmk_header.total_size)
-%define ADDR_SBMK_COMPRESSED_ADDR  (sbmk_header + struc_sbmk_header.compressed_addr)
-%define ADDR_SBMK_CHECKSUM         (sbmk_header + struc_sbmk_header.checksum)
-%define ADDR_SBMK_SECTORS          (sbmk_header + struc_sbmk_header.sectors)
-%define ADDR_SBMK_DRVID            (sbmk_header + struc_sbmk_header.drvid)
-%define ADDR_SBMK_BLOCK_MAP        (sbmk_header + struc_sbmk_header.block_map)
-%define ADDR_SBMK_FLAGS            (sbmk_header + struc_sbmk_header.flags)
-%define ADDR_SBMK_DELAY_TIME       (sbmk_header + struc_sbmk_header.delay_time)
-%define ADDR_SBMK_DIRECT_BOOT      (sbmk_header + struc_sbmk_header.direct_boot)
-%define ADDR_SBMK_DEFAULT_BOOT     (sbmk_header + struc_sbmk_header.default_boot)
-%define ADDR_SBMK_ROOT_PASSWORD    (sbmk_header + struc_sbmk_header.root_password)
-%define ADDR_SBMK_BOOTMENU_STYLE   (sbmk_header + struc_sbmk_header.bootmenu_style)
-%define ADDR_SBMK_CDROM_IOPORTS    (sbmk_header + struc_sbmk_header.cdrom_ioports)
-%define ADDR_SBMK_Y2K_LAST_YEAR    (sbmk_header + struc_sbmk_header.y2k_last_year)
-%define ADDR_SBMK_Y2K_LAST_MONTH   (sbmk_header + struc_sbmk_header.y2k_last_month)
-%define ADDR_SBMK_BOOT_RECORDS     (sbmk_data + struc_sbmk_data.boot_records)
-%define ADDR_SBMK_SBML_CODES       (sbmk_data + struc_sbmk_data.sbml_codes)
-%define ADDR_SBMK_PREVIOUS_MBR     (sbmk_data + struc_sbmk_data.previous_mbr)
-%define ADDR_SBMK_BOOT_MENU_POS    (sbmk_data + struc_sbmk_data.boot_menu_pos)
-%define ADDR_SBMK_MAIN_MENU_POS    (sbmk_data + struc_sbmk_data.main_menu_pos)
-%define ADDR_SBMK_RECORD_MENU_POS  (sbmk_data + struc_sbmk_data.record_menu_pos)
-%define ADDR_SBMK_SYS_MENU_POS     (sbmk_data + struc_sbmk_data.sys_menu_pos)
-
-	bits 16
 
 %ifdef EMULATE_PROG
 	org 0x100
@@ -93,71 +74,81 @@
 %endif
 
 	section .text
-        
+
 start_of_sbm:
 start_of_kernel:
 
 ;=============================================================================
-;the header of Smart Boot Manager kernel
+;  data for the Smart Boot Manager
 ;=============================================================================
 sbmk_header     istruc  struc_sbmk_header
 	        jmp sbm_start
 	        nop
-;!!! PLEASE DON NOT CHANGE THE SIZE AND ORDER OF FOLLOWING DATA !!!
-    at struc_sbmk_header.magic,          dd SBMK_MAGIC   ; magic number = 'SBMK', 4 bytes.
-    at struc_sbmk_header.version,        dw SBMK_VERSION ; version, high byte is major version,
-                                                         ; low byte is minor version.
-    at struc_sbmk_header.total_size,     dw (end_of_kernel - start_of_kernel)
-                                                         ; set to total(compressed) 
-                                                         ; size by installer
-    at struc_sbmk_header.compressed_addr,dw sbm_real_start ; The address of compressed part
 
-    at struc_sbmk_header.checksum,       db 0            ; checksum of the kernel program.
-
-    at struc_sbmk_header.sectors,        db 0            ; kernel size in sectors
-    at struc_sbmk_header.drvid,          db 0
-    at struc_sbmk_header.block_map,      times SIZE_OF_STRUC_BLOCK_MAP * 5 db 0
-    at struc_sbmk_header.reserved1,      dw  BR_GOOD_FLAG
-;=============================================================================
-; MAIN data area
-;=============================================================================
-    at struc_sbmk_header.flags,          db KNLFLAG_FIRSTSCAN 
-    at struc_sbmk_header.delay_time,     db 30           ; delay time ( seconds )
-    at struc_sbmk_header.direct_boot,    db 0xff         ; >= MAX_RECORD_NUM means no
-                                                         ; direct boot.
-    at struc_sbmk_header.default_boot,   db 0xff         ; the record number will
-                                                         ; be booted after the
-                                                         ; delay time is up or ESC
-                                                         ; key is pressed.
-    at struc_sbmk_header.root_password,  dd 0
-
-    at struc_sbmk_header.bootmenu_style, db 0,0
-    at struc_sbmk_header.cdrom_ioports,  dw 0, 0
-    at struc_sbmk_header.y2k_last_year,  dw 0
-    at struc_sbmk_header.y2k_last_month, db 0
-    at struc_sbmk_header.reserved2,      db 0,0x55,0xAA
-                iend
-
-end_of_sbmk_header:
-
-;=============================================================================
-; Other DATA
-;=============================================================================
-sbmk_data       istruc struc_sbmk_data
-; buffer to store boot records
-    at struc_sbmk_data.boot_records, times MAX_RECORD_NUM * SIZE_OF_BOOTRECORD db 0
-    at struc_sbmk_data.sbml_codes,   times SIZE_OF_MBR db 0
-    at struc_sbmk_data.previous_mbr, times SECTOR_SIZE db 0
-
-; private data 
-    at struc_sbmk_data.boot_menu_pos,    dw 0x060E
-    at struc_sbmk_data.main_menu_pos,    dw 0x0101
-    at struc_sbmk_data.record_menu_pos,  dw 0x0202
-    at struc_sbmk_data.sys_menu_pos,     dw 0x0303
-                iend
+  ADDR_SBMK_BLOCK_MAP              resb      SIZE_OF_STRUC_BLOCK_MAP * 5
+  ADDR_SBMK_FLAGS                  db        KNLFLAG_FIRSTSCAN
+  ADDR_SBMK_DELAY_TIME             db        30
+  ADDR_SBMK_DIRECT_BOOT            db        0FFh
+  ADDR_SBMK_DEFAULT_BOOT           db        0FFh
+  ADDR_SBMK_DRVID                  db        80h
+  ADDR_SBMK_ROOT_PASSWORD          dd        0
+  ADDR_SBMK_BOOTMENU_STYLE         db        0, 0
+  ADDR_SBMK_CDROM_IOPORTS          dw        0, 0
+  ADDR_SBMK_Y2K_LAST_YEAR          dw        0
+  ADDR_SBMK_Y2K_LAST_MONTH         db        0
+  ADDR_SBMK_BOOT_MENU_POS          dw        0x060E
+  ADDR_SBMK_MAIN_MENU_POS          dw        0x0101
+  ADDR_SBMK_RECORD_MENU_POS        dw        0x0202
+  ADDR_SBMK_SYS_MENU_POS           dw        0x0303
 
 
-end_of_sbmk_data:
+
+; Partition Table
+
+times 1BEh-($-$$) db 0
+
+
+Partition_1
+    Partition_1_bootable	db	80h
+    Partition_1_Start_CHS	db	00h, 01h, 01h
+    Partition_1_Type		db	04h
+    Partition_1_End_CHS		db	0FFh, 0FEh, 0FFh
+    Partition_1_Start_LBA	dd	63
+    Partition_1_Sectors		dd	20160-63
+Partition_2
+    Partition_2_bootable	db	0
+    Partition_2_Start_CHS	db	0, 0, 0
+    Partition_2_Type		db	7h
+    Partition_2_End_CHS		db	0, 0, 0
+    Partition_2_Start_LBA	dd	20160
+    Partition_2_Sectors		dd	40960
+Partition_3
+    Partition_3_bootable	db	0
+    Partition_3_Start_CHS	db	0, 0, 0
+    Partition_3_Type		db	0
+    Partition_3_End_CHS		db	0, 0, 0
+    Partition_3_Start_LBA	dd	0
+    Partition_3_Sectors		dd	0
+Partition_4
+    Partition_4_bootable	db	0
+    Partition_4_Start_CHS	db	0, 0, 0
+    Partition_4_Type		db	0
+    Partition_4_End_CHS		db	0, 0, 0
+    Partition_4_Start_LBA	dd	0
+    Partition_4_Sectors		dd	0
+    
+
+times 510-($-$$) db 0
+
+Boot_Signature	dw	0AA55h
+
+
+
+; some huge data
+
+  ADDR_SBMK_BOOT_RECORDS           resb      MAX_RECORD_NUM * SIZE_OF_BOOTRECORD
+
+
 
 
 ;=============================================================================
@@ -166,75 +157,56 @@ end_of_sbmk_data:
 
 sbm_start:
 
-%ifndef EMULATE_PROG                            ; real program goes here.
-	cli
-	mov ax, STACK_SEG
-	mov ss, ax                              ; ss:sp = 0x3000:0x1000
-	mov sp, STACK_SIZE                      ;
+%ifndef EMULATE_PROG
 
-	push cs
-	pop ds
+ ; low level Master Boot Record code starts here
+
+  ; disable Interrupts and clear the direction flag
+	cli
+	cld
+	
+	; set stack to 0000h:7C00h
+	xor ax,ax
+	mov ss,ax
+	mov esp,7C00h
+	
+	; set Data Segments to 0000h
+	mov ds,ax
+	mov es,ax
+	mov fs,ax
+	mov gs,ax
 	sti
 
 ;Save current driver id for future use.
 	mov [ADDR_SBMK_DRVID], dl
 
-;Backup Smart BootManager and decompress it, if it's compressed.
-	push word KNLBACKUP_SEG
-	pop es
+%else
 
-	xor si, si
-	xor di, di
+ ; DOS execution source code starts here
+  
+	; set Data Segments to CS / 0000h
+	push cs
+	pop ax
+	mov ds,ax
+	mov es,ax
+	
+	xor ax,ax
+	mov fs,ax
+	mov gs,ax
 
-	mov cx, [ADDR_SBMK_TOTAL_SIZE]
-	cld
-	rep movsb
-
-%ifdef COMPRESS_SBM
-;test if it's compressed
-	test byte [ADDR_SBMK_FLAGS], KNLFLAG_COMPRESSED
-	jmpz sbm_real_start
-
-;decompress SBM
-	mov si, sbm_real_start
-	push si
-	pop di
-
-	push ds
-	push es
-	pop ds
-	pop es
-
-	mov bx, 0x800F
-	xor cx, cx
-	xor bp, bp
-	inc bp
-	push ds
-	pop dx
-
-	jmp short decompr_start_n2b		; decompress SBM
-
-
-;=============================================================================
-%include "n2b_d8e.ash"
-;=============================================================================
-
-%endif
 %endif
 
 ;=============================================================================
 ; Compressed area starts here.
 ;=============================================================================
 sbm_real_start:
-	push cs					; reinitialize cs, ds
-	push cs
-	pop ds
-	pop es
 
-; clear the temp data area.
-	mov di, start_of_tmp_data
-	mov cx, end_of_tmp_data - start_of_tmp_data
-        call clear_memory
+  ; clear the temporary data area (overwrite it with zeros)
+  xor eax,eax
+  mov di,Start_of_Temporary_Data_Area
+  mov cx,End_of_Temporary_Data_Area - Start_of_Temporary_Data_Area
+
+  rep stosb
 
 ; Install My Int 13H handle
 	mov bl, 1
@@ -749,13 +721,13 @@ main_action_table:
         dw  0
         dw  0
 
-        db  ACTFLAG_REDRAW_SCR
-        dw  0
-        dw  main_install_sbm
+        ;db  ACTFLAG_REDRAW_SCR
+        ;dw  0
+        ;dw  main_install_sbm
 
-        db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
-        dw  0
-        dw  main_uninstall_sbm
+        ;db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
+        ;dw  0
+        ;dw  main_uninstall_sbm
 
 .end_of_sys_menu
 
@@ -896,8 +868,9 @@ SIZE_OF_SBMK equ ($-$$)
         resb MAX_SBM_SIZE - SIZE_OF_SBMK   ; skip enough space for theme.
 %endif
  
+Start_of_Temporary_Data_Area:
 start_of_tmp_data:
 %include "tempdata.asm"
-end_of_tmp_data:
+End_of_Temporary_Data_Area:
 
 ; vi:ts=8:et:nowrap

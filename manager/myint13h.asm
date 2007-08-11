@@ -6,9 +6,6 @@
 ;
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
-%ifndef HAVE_MYINT13H
-%define HAVE_MYINT13H
-
 %ifndef DISABLE_CDBOOT
   %define SIZE_OF_EDD30	8	; my EDD3.0 and ATAPI driver need 6K mem
 %else
@@ -21,10 +18,6 @@
 %else
   %define EDD30_SIG1	'BM'
   %define EDD30_SIG2	'SD'
-%endif
-
-%ifndef MAIN
-	section .text
 %endif
 
 ;=============================================================================
@@ -156,10 +149,3 @@ check_myint13h:
 module_edd30:
 incbin "edd30.bin"
 end_of_mod_edd30:
-
-%ifndef MAIN
-	section .bss
-%include "tempdata.asm"
-%endif
-
-%endif

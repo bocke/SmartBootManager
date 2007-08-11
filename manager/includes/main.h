@@ -5,6 +5,8 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING and CREDITS for details.
 ;
 
+; some flags
+
 %define KNLFLAG_FIRSTSCAN   0x01
 %define KNLFLAG_SECURITY    0x02
 %define KNLFLAG_NOINT13EXT  0x04

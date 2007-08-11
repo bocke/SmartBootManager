@@ -6,17 +6,6 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
 
-%ifndef HAVE_HD_IO
-
-%ifndef MAIN
-%include "macros.h"
-%include "hd_io.h"
-%include "utils.asm"
-	section .text
-%endif
-
-%define HAVE_HD_IO
-
 %define RETRY_TIMES     3
 
         bits 16
@@ -561,10 +550,3 @@ get_drvid_str:
 	ret
 
 use_int13_ext  db 1
-
-%ifndef MAIN
-	section .bss
-%include "tempdata.asm"
-%endif
-
-%endif	;End of HAVE_HD_IO

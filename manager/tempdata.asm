@@ -8,7 +8,6 @@
 ;==============================================================================
 ;temp data area for hd_io.asm
 ;==============================================================================
-%ifdef HAVE_HD_IO
 %ifndef HD_IO_TEMPDATA
 %define HD_IO_TEMPDATA
 
@@ -20,12 +19,10 @@ hdio_tmp:
 .disk_errno	resb 1
 
 %endif
-%endif
 
 ;==============================================================================
 ;temp data area for knl.asm
 ;==============================================================================
-%ifdef HAVE_KNL
 %ifndef KNL_TEMPDATA
 %define KNL_TEMPDATA
 
@@ -42,12 +39,10 @@ knl_tmp:
 .disk_buf2		resb 2048
 
 %endif
-%endif
 
 ;==============================================================================
 ;temp data area for ui.asm
 ;==============================================================================
-%ifdef HAVE_UI
 %ifndef UI_TEMPDATA
 %define UI_TEMPDATA
 
@@ -68,12 +63,10 @@ ui_tmp:
 .tmp_buf1	resb  256
 
 %endif
-%endif
 
 ;==============================================================================
 ;temp data area for utils.asm
 ;==============================================================================
-%ifdef HAVE_UTILS
 %ifndef UTILS_TEMPDATA
 %define UTILS_TEMPDATA
 
@@ -83,12 +76,10 @@ utils_tmp:
 .kbd_bypass_next_shift resb 1
 
 %endif
-%endif
 
 ;=============================================================================
 ;temp data area for main.asm
 ;=============================================================================
-%ifdef HAVE_MAIN_PROG
 %ifndef MAIN_TEMPDATA
 %define MAIN_TEMPDATA
 
@@ -120,9 +111,7 @@ main_tmp:
 .root_buf        resb 80
 
 %endif
-%endif
 
-%ifdef HAVE_MYINT13H
 %ifndef MYINT13H_TEMPDATA
 %define MYINT13H_TEMPDATA
 
@@ -130,6 +119,5 @@ myint13h_tmp:
 .edd30_off  resw 1
 .edd30_seg  resw 1
 
-%endif
 %endif
 

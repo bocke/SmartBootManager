@@ -12,16 +12,6 @@
 %define SECTOR_SIZE     0x200              ; size of a sector
 %define CDSECTOR_SIZE   0x800              ; size of a CD-ROM sector
 
-%define SBMK_MAGIC      0x4B4D4253         ; magic number of
-                                           ; Smart Boot Manager kernel.
-%define SBMK_VERSION    0x035A             ; version of kernel.
-%define SBMT_MAGIC      0x544D4253         ; magic number of
-                                           ; Smart Boot Manager theme.
-%define SBMT_VERSION    0x035A             ; version of theme.
-%define SBML_MAGIC      0x4C4D4253         ; magic number of
-                                           ; Smart Boot Manager loader.
-%define SBML_VERSION    0x0301             ; version of loader.
-
 %define MAX_SBM_SIZE    30000              ; the max size of Smart Boot Manager
 
 %define SIZE_OF_MBR     446                ; the size of master boot record
@@ -30,16 +20,8 @@
 %define MAX_FLOPPY_NUM      2
 %define MAX_PASSWORD_LENGTH 16
 
-%define BOOT_OFF        0x7C00             ; boot sector startup offset
-%define BOOT_SEG	0x07C0
 %define PART_OFF        0x0600             ; partition table offset
                                            ; Smart Boot Manager kernel startup
-%define KERNEL_SEG      0x1000             ; Segment ( Off = 0 )
-%define KNLBACKUP_SEG   0x2000             ; Backup Segment ( Off = 0 )
-
-%define STACK_SEG       0x3000
-%define STACK_SIZE      0x8000
-
 %define SBM_SAVE_NBLKS  5
 
 %ifndef STRUC_SBMK_HEADER

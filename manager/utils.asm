@@ -7,13 +7,6 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
 
-%ifndef HAVE_UTILS
-%define HAVE_UTILS
-
-%ifndef MAIN
-%include "evtcode.h"
-%endif
-
 ;=============================================================================
 ;itoa ---- convert integer to ascii string (the string is zero ending)
 ;input:
@@ -1056,33 +1049,3 @@ clear_memory:
 	popa
 	ret 
 
-%ifndef MAIN
-keyboard_type       db 0x10
-
-keymap:
-.number             dw 0
-.data               dw 0
-
-str_idx:
-.sunday             dw string.sunday
-.monday             dw string.monday
-.tuesday            dw string.tuesday
-.wednesday          dw string.wednesday
-.thursday           dw string.thursday
-.friday             dw string.friday
-.saturday           dw string.saturday
-
-string:
-.sunday              db 'Sun',0
-.monday              db 'Mon',0
-.tuesday             db 'Tue',0
-.wednesday           db 'Wed',0
-.thursday            db 'Thu',0
-.friday              db 'Fri',0
-.saturday            db 'Sat',0
-
-	section .bss
-%include "tempdata.asm"
-%endif
-
-%endif	;End of HAVE_UTILS

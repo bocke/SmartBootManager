@@ -7,19 +7,6 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
 
-%ifndef HAVE_KNL
-
-%ifndef MAIN
-%include "knl.h"
-%include "sbm.h"
-%include "macros.h"
-%include "hd_io.asm"
-%include "myint13h.asm"
-%include "utils.asm"
-	section .text
-%endif
-
-%define HAVE_KNL
 %define LIMIT_FLOPPY_NUMBER
 
 %define NUM_OF_ID       (part_type.str_tbl - part_type.id_tbl)
@@ -1414,7 +1401,7 @@ boot_normal_record:
         
 .boot_driver:
         lea si, [knl_tmp.disk_buf1]
-        mov di, BOOT_OFF
+        mov di, 7C00h
         rep movsb                           ; move boot sector to 0000:7C00
 
         pop si
@@ -1435,10 +1422,10 @@ boot_normal_record:
 %if 0
         xor bp, bp                          ; might help some boot problems
         mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
-        jmp 0:BOOT_OFF                      ; start boot sector
+        jmp 0:7C00h                         ; start boot sector
 %else
 ;boot code from the OS2 Boot Manager
-        mov bx, BOOT_OFF
+        mov bx, 7C00h
     
         mov ss,ax                           ; on all processors since the 186
         mov sp,bx                           ; these instructions are locked
@@ -1852,16 +1839,3 @@ part_type:
         
 .end_of_tbl
 
-
-%ifndef MAIN
-reset_video_mode:
-	ret
-
-sbmk_header:
-.drvid	db 0
-
-	section .bss
-%include "tempdata.asm"
-%endif
-
-%endif	;End of HAVE_KNL

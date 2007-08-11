@@ -7,8 +7,6 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
 
-%ifdef MAIN
-
 
 ;=============================================================================
 ; >>>>>>>>>>>>>>>>>>>>>>>>> Initialization Functions <<<<<<<<<<<<<<<<<<<<<<<<<
@@ -1228,27 +1226,16 @@ main_save_boot_manager:
 	mov ax, [main_windows_data.sys_menu + struc_window.win_pos]
 	mov [ADDR_SBMK_SYS_MENU_POS], ax
 
-;Copy data area to backup seg
-	xor si, si
-	xor di, di
-
-	push word KNLBACKUP_SEG
-	pop es
-
-	mov cx, sbm_start
-	cld
-	rep movsb
-
-;calculate checksum
-	push es
-	pop ds
-
-	xor si, si
-	mov cx, [ADDR_SBMK_TOTAL_SIZE]
-	mov byte [ADDR_SBMK_CHECKSUM], 0
-	call calc_checksum                      ; calculate the checksum.
-	neg bl
-	mov [ADDR_SBMK_CHECKSUM], bl
+; ;calculate checksum
+; 	push es
+; 	pop ds
+; 
+; 	xor si, si
+; 	mov cx, end_of_kernel - start_of_kernel
+; 	mov byte [ADDR_SBMK_CHECKSUM], 0
+; 	call calc_checksum                      ; calculate the checksum.
+; 	neg bl
+; 	mov [ADDR_SBMK_CHECKSUM], bl
 
 	mov dl, [ADDR_SBMK_DRVID]
 	lea si, [ADDR_SBMK_BLOCK_MAP]
@@ -1364,7 +1351,7 @@ main_boot_prev_mbr:
         xor ebx, ebx
         mov es, bx
         mov dl, [ADDR_SBMK_DRVID]
-        mov di, BOOT_OFF
+        mov di, 7C00h
         mov ax, (INT13H_READ << 8) | 0x01
         call disk_access
         pop es
@@ -1383,7 +1370,7 @@ main_boot_prev_mbr:
 ; copy previous mbr to Boot Offset 0x7c00
         cld
         mov cx, SIZE_OF_MBR
-        lea si, [ADDR_SBMK_PREVIOUS_MBR]
+;        lea si, [ADDR_SBMK_PREVIOUS_MBR]
         xor ax, ax
         push ax
         pop es
@@ -1394,7 +1381,7 @@ main_boot_prev_mbr:
 
         xor bp, bp                          ; might help some boot problems
         mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
-        jmp 0:BOOT_OFF                      ; start boot sector
+        jmp 0:7C00h                         ; jump to the  boot sector
 
 .disk_failed:
         call main_show_disk_error
@@ -1463,7 +1450,5 @@ main_choose_cdimg:
 	ret
 
 .catalogs_buf dw 0
-
-%endif
 
 %endif

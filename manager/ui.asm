@@ -7,16 +7,6 @@
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
 
-%ifndef HAVE_UI
-
-%ifndef MAIN
-%include "ui.h"
-%include "evtcode.h"
-%include "utils.asm"
-	section .text
-%endif
-
-%define HAVE_UI
 %define DIRECT_DRAW
 
 %define SCR_BUF_SEG0    0xB800
@@ -2911,28 +2901,6 @@ winlist_broadcast_event:
 	ret
 
 
-%ifndef MAIN
-get_event:
-
-.loop_get_event:
-	call check_keyevent
-	or ax, ax
-	jz .loop_get_event
-	ret
-
-
-;=============================================================================
-; main_auth_action  ---- auth an action
-; input:
-;	al =  auth type
-; output:
-;	cf =  0 auth ok
-;	cf =  1 auth failed.
-;=============================================================================
-main_auth_action:
-	clc
-	ret
-%endif
 
 
 ;=============================================================================
@@ -3125,68 +3093,5 @@ menubox_def_action_table:
 
 
 ; ===========================================================================
-%ifndef MAIN
-
-; how to draw window frame
-keyboard_type       db  0x10       ; keyboard type, 0x10 = enhanced keyboard
-draw_frame_method   db  0          ; = 0 means draw all frame using frame attr.
-                                   ; = 1 means draw top horizontal line using
-                                   ;     title attr.
-                                   ; = 2 means draw top corner and horizontal
-                                   ;     line using title attr.
-color:
-.win_title_inactive db  0x70        ; title attribute for inactive window.
-
-.list_box:
-.list_box_frame      db  0x30
-.list_box_title      db  0xBF
-.list_box_header     db  0x30
-.list_box_normal     dw  0x3C30
-.list_box_focus      dw  0x0C0F
-.list_box_scrollbar  db  0x3F
-
-.input_box:
-.input_box_frame        db  0xB0        ;
-.input_box_title        db  0xF1        ; input box
-.input_box_msg          db  0xB0        ;
-
-.error_box:
-.error_box_frame        db  0xCF        ;
-.error_box_title        db  0xF1        ; error box
-.error_box_msg          db  0xCF        ;
-
-.info_box:
-.info_box_frame         db  0xB0        ;
-.info_box_title         db  0xF1        ; info box
-.info_box_msg           db  0xB0        ;
-
-
-
-frame_char:
-.top             db     0x020
-.bottom          db     0x0CD
-.left            db     0x0BA
-.right           db     0x0BA
-.tl_corner       db     0x0C9               ; top left corner
-.tr_corner       db     0x0BB               ; top right corner
-.bl_corner       db     0x0C8               ; bottom left corner
-.br_corner       db     0x0BC               ; bottom right corner
-
-size:
-.box_width       db  5
-.box_height      db  4
-
-str_idx:
-.input          dw  string.input
-
-string:
-.input          db     'Input',0
-
-	section .bss
-%include "tempdata.asm"
-
-%endif
-
-%endif	;End of HAVE_UI
 
 ; vi:nowrap
