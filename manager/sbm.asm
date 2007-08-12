@@ -50,9 +50,6 @@
 [bits 16]
 CPU 386
 
-
-;%define MAIN
-
 %include "macros.h"
 %include "ui.h"
 %include "hd_io.h"
@@ -66,6 +63,29 @@ CPU 386
 %define FIRST_VISIBLE_RECORD  (main_windows_data.boot_menu + struc_menu_box.first_visible_item)
 %define BOOT_MENU_AREA_HEIGHT (main_windows_data.boot_menu + struc_menu_box.menu_area_size + 1) 
 
+; some data definitions
+
+%define disk_address_packet     7E00h
+  %define dap                   disk_address_packet
+
+  %define dap_Size      dap+00h
+  %define dap_Reserved  dap+01h
+  %define dap_Count     dap+02h
+  %define dap_Buffer    dap+04h				; Segment:Offset value
+  %define dap_LBA_low   dap+08h
+  %define dap_LBA_high  dap+0Ch
+
+%define Boot_stuff              7E10h
+  %define Boot_Drive            Boot_stuff+0
+  %define Boot_Drive_Sector     Boot_stuff+4		; ToasterOS Standalone only
+  %define Boot_Drive_Type       Boot_stuff+8		; ToasterOS Standalone only
+  %define Boot_Drive_Buffer     Boot_stuff+12		; ToasterOS Standalone only
+  %define Boot_File_Handle      Boot_stuff+51		; ToasterOS Standalone only
+  %define Temp_RM               Boot_stuff+69		; ToasterOS Standalone Bootloader only
+  %define Boot_Drive_Pointer    Boot_stuff+73		; ToasterOS Standalone only
+  %define Debug_RM              Boot_stuff+77		; triple-byte
+  %define Boot_Last_Boot_drive  Boot_stuff+78
+
 
 %ifdef EMULATE_PROG
 	org 0x100
@@ -75,22 +95,41 @@ CPU 386
 
 	section .text
 
-start_of_sbm:
-start_of_kernel:
+
+%ifndef EMULATE_PROG
+
+  ; include the load code for the low level Master Boot Record
+  %include  'Bootloader.asm'
+  
+%else
+
+  ; include DOS Source Code
+  
+	; set Data Segments to CS / 0000h
+	push cs
+	pop ax
+	mov ds,ax
+	mov es,ax
+	
+	xor ax,ax
+	mov fs,ax
+	mov gs,ax
+	
+	jmp Smart_Boot_Manager_Kernel
+
+%endif
+
+
 
 ;=============================================================================
 ;  data for the Smart Boot Manager
 ;=============================================================================
-sbmk_header     istruc  struc_sbmk_header
-	        jmp sbm_start
-	        nop
 
   ADDR_SBMK_BLOCK_MAP              resb      SIZE_OF_STRUC_BLOCK_MAP * 5
   ADDR_SBMK_FLAGS                  db        KNLFLAG_FIRSTSCAN
   ADDR_SBMK_DELAY_TIME             db        30
   ADDR_SBMK_DIRECT_BOOT            db        0FFh
   ADDR_SBMK_DEFAULT_BOOT           db        0FFh
-  ADDR_SBMK_DRVID                  db        80h
   ADDR_SBMK_ROOT_PASSWORD          dd        0
   ADDR_SBMK_BOOTMENU_STYLE         db        0, 0
   ADDR_SBMK_CDROM_IOPORTS          dw        0, 0
@@ -102,48 +141,6 @@ sbmk_header     istruc  struc_sbmk_header
   ADDR_SBMK_SYS_MENU_POS           dw        0x0303
 
 
-
-; Partition Table
-
-times 1BEh-($-$$) db 0
-
-
-Partition_1
-    Partition_1_bootable	db	80h
-    Partition_1_Start_CHS	db	00h, 01h, 01h
-    Partition_1_Type		db	04h
-    Partition_1_End_CHS		db	0FFh, 0FEh, 0FFh
-    Partition_1_Start_LBA	dd	63
-    Partition_1_Sectors		dd	20160-63
-Partition_2
-    Partition_2_bootable	db	0
-    Partition_2_Start_CHS	db	0, 0, 0
-    Partition_2_Type		db	7h
-    Partition_2_End_CHS		db	0, 0, 0
-    Partition_2_Start_LBA	dd	20160
-    Partition_2_Sectors		dd	40960
-Partition_3
-    Partition_3_bootable	db	0
-    Partition_3_Start_CHS	db	0, 0, 0
-    Partition_3_Type		db	0
-    Partition_3_End_CHS		db	0, 0, 0
-    Partition_3_Start_LBA	dd	0
-    Partition_3_Sectors		dd	0
-Partition_4
-    Partition_4_bootable	db	0
-    Partition_4_Start_CHS	db	0, 0, 0
-    Partition_4_Type		db	0
-    Partition_4_End_CHS		db	0, 0, 0
-    Partition_4_Start_LBA	dd	0
-    Partition_4_Sectors		dd	0
-    
-
-times 510-($-$$) db 0
-
-Boot_Signature	dw	0AA55h
-
-
-
 ; some huge data
 
   ADDR_SBMK_BOOT_RECORDS           resb      MAX_RECORD_NUM * SIZE_OF_BOOTRECORD
@@ -151,66 +148,25 @@ Boot_Signature	dw	0AA55h
 
 
 
-;=============================================================================
-; Program entry
-;=============================================================================
-
-sbm_start:
-
-%ifndef EMULATE_PROG
-
- ; low level Master Boot Record code starts here
-
-  ; disable Interrupts and clear the direction flag
-	cli
-	cld
-	
-	; set stack to 0000h:7C00h
-	xor ax,ax
-	mov ss,ax
-	mov esp,7C00h
-	
-	; set Data Segments to 0000h
-	mov ds,ax
-	mov es,ax
-	mov fs,ax
-	mov gs,ax
-	sti
-
-;Save current driver id for future use.
-	mov [ADDR_SBMK_DRVID], dl
-
-%else
-
- ; DOS execution source code starts here
-  
-	; set Data Segments to CS / 0000h
-	push cs
-	pop ax
-	mov ds,ax
-	mov es,ax
-	
-	xor ax,ax
-	mov fs,ax
-	mov gs,ax
-
-%endif
 
 ;=============================================================================
-; Compressed area starts here.
+;  Smart Boot Manager Kernel
 ;=============================================================================
-sbm_real_start:
 
-  ; clear the temporary data area (overwrite it with zeros)
-  xor eax,eax
-  mov di,Start_of_Temporary_Data_Area
-  mov cx,End_of_Temporary_Data_Area - Start_of_Temporary_Data_Area
+Smart_Boot_Manager_Kernel:
 
-  rep stosb
 
-; Install My Int 13H handle
-	mov bl, 1
-	call install_myint13h
+; clear the temporary data area (overwrite it with zeros)
+xor eax,eax
+mov di,Start_of_Temporary_Data_Area
+mov cx,(End_of_Temporary_Data_Area - Start_of_Temporary_Data_Area) / 4
+
+rep stosd
+
+
+  ; Install My Int 13H handle
+  mov bl, 1
+  call install_myint13h
 
 ;Initializing the CD-ROMs..
 %ifndef DISABLE_CDBOOT
@@ -869,7 +825,6 @@ SIZE_OF_SBMK equ ($-$$)
 %endif
  
 Start_of_Temporary_Data_Area:
-start_of_tmp_data:
 %include "tempdata.asm"
 End_of_Temporary_Data_Area:
 

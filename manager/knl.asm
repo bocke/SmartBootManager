@@ -1739,7 +1739,7 @@ check_allow_act:
 ;==============================================================================
 check_prev_mbr:
 	pusha
-	mov dl, [ADDR_SBMK_DRVID]
+	mov dl, [Boot_Drive]
 	call get_drive_flags
 	jc .end
 	test al, DRVFLAG_REMOVABLE

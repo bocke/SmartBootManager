@@ -475,7 +475,7 @@ root_window_draw_knl_flags:
         mov di, main_tmp.root_buf
 	push di
 	push dx
-	mov dl, [ADDR_SBMK_DRVID]
+	mov dl, [Boot_Drive]
 	call get_drvid_str
 	pop dx
 	pop si
@@ -1237,7 +1237,7 @@ main_save_boot_manager:
 ; 	neg bl
 ; 	mov [ADDR_SBMK_CHECKSUM], bl
 
-	mov dl, [ADDR_SBMK_DRVID]
+	mov dl, [Boot_Drive]
 	lea si, [ADDR_SBMK_BLOCK_MAP]
 	mov cx, SBM_SAVE_NBLKS
 	xor di, di
@@ -1350,7 +1350,7 @@ main_boot_prev_mbr:
         push es
         xor ebx, ebx
         mov es, bx
-        mov dl, [ADDR_SBMK_DRVID]
+        mov dl, [Boot_Drive]
         mov di, 7C00h
         mov ax, (INT13H_READ << 8) | 0x01
         call disk_access
