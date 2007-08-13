@@ -1262,7 +1262,8 @@ main_save_boot_manager:
 	call disk_access
 	jc .write_end
         
-	add di, SECTOR_SIZE
+        ; next sector or something
+	add di, 512
 	inc ebx
 	loop .loop_write
 
@@ -1369,7 +1370,7 @@ main_boot_prev_mbr:
 
 ; copy previous mbr to Boot Offset 0x7c00
         cld
-        mov cx, SIZE_OF_MBR
+;        mov cx, SIZE_OF_MBR
 ;        lea si, [ADDR_SBMK_PREVIOUS_MBR]
         xor ax, ax
         push ax
@@ -1380,7 +1381,7 @@ main_boot_prev_mbr:
         pop ds
 
         xor bp, bp                          ; might help some boot problems
-        mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
+        ;mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
         jmp 0:7C00h                         ; jump to the  boot sector
 
 .disk_failed:

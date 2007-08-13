@@ -334,14 +334,14 @@ check_bootrecord:
         pop ax                                       ; load flags
         jmpc .bad_record
 
-        cmp word [di + BR_FLAG_OFF], BR_GOOD_FLAG    ; check if the father is
+        cmp word [di + 510], 0AA55h    ; check if the father is
         jne .bad_record                              ; good
 
         mov ecx, [si + struc_bootrecord.abs_addr]    ; get partition's abs addr
         sub ecx, ebx                                 ; calculate relative address
 	mov ebx, ecx
 
-        add di, PART_TBL_OFF                         ; point to father's partition
+        add di, 1BEh                         ; point to father's partition
                                                      ; table
         mov cx, 4
         
@@ -417,7 +417,7 @@ check_bootrecord:
         call disk_access                             ; into buffer
         jc .bad_record                               ; read error!
         
-        cmp word [di + BR_FLAG_OFF], BR_GOOD_FLAG    ; check if the paritition
+        cmp word [di + 510], 0AA55h    ; check if the paritition
         jne .bad_record                              ; is good
 %endif
 
@@ -534,10 +534,10 @@ search_part_records:
         pop di
         jmpc .end
         
-        cmp word [si + BR_FLAG_OFF], BR_GOOD_FLAG    ; check if the partition
+        cmp word [si + 510], 0AA55h    ; check if the partition
         jmpne .end                                   ; table is good
         
-        add si, PART_TBL_OFF                         ; point to partition table
+        add si, 1BEh                         ; point to partition table
         
         xor al, al
 
@@ -992,7 +992,7 @@ mark_record_active:
         push ebx
         push di
         
-        add di, PART_TBL_OFF
+        add di, 1BEh
 
         mov ecx, [si + struc_bootrecord.abs_addr]    ; abs addr -> ecx
 
@@ -1070,7 +1070,7 @@ toggle_record_hidden:
         push ebx
         push di
         
-        add di, PART_TBL_OFF
+        add di, 1BEh
 
         mov ecx, [si + struc_bootrecord.abs_addr]    ; abs addr -> ebx
 
@@ -1327,7 +1327,7 @@ boot_normal_record:
         pop bx
         jmpc .disk_error
 
-        cmp word [di + BR_FLAG_OFF], BR_GOOD_FLAG
+        cmp word [di + 510], 0AA55h
         jmpne .no_system
 
         test bx, INFOFLAG_ISDRIVER          ; if it's driver, skip loading the
@@ -1343,7 +1343,7 @@ boot_normal_record:
         pop bx
         jc .disk_error
 
-        cmp word [di + BR_FLAG_OFF], BR_GOOD_FLAG
+        cmp word [di + 510], 0AA55h
         jne .no_system                      ; bad partition table, treated as
                                             ; no operating system.
 
@@ -1385,7 +1385,7 @@ boot_normal_record:
         xor ax, ax
         push ax
         pop es
-        mov cx, SECTOR_SIZE
+        mov cx, 512
 
         test word [si + struc_bootrecord.flags], INFOFLAG_ISDRIVER
                                             ; if it's driver, no partition
@@ -1412,7 +1412,7 @@ boot_normal_record:
 ; boot code from lilo :-)
 
         mov si, bx                          ; ds:si , es:di point to the
-        add si, PART_OFF + PART_TBL_OFF     ; partition record.
+        add si, PART_OFF + 1BEh     ; partition record.
         push si                             ;
         pop di                              ;
 
@@ -1421,7 +1421,7 @@ boot_normal_record:
         
 %if 0
         xor bp, bp                          ; might help some boot problems
-        mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
+        mov ax, 0AA55h                ; boot signature (just in case ...)
         jmp 0:7C00h                         ; start boot sector
 %else
 ;boot code from the OS2 Boot Manager
@@ -1433,7 +1433,7 @@ boot_normal_record:
         mov bp, si
         push    ax
         push    bx
-        mov ax, BR_GOOD_FLAG
+        mov ax, 0AA55h
         retf                                ; start boot sector
 %endif
         
@@ -1612,7 +1612,7 @@ prepare_boot:
         mov eax, ebx
         sub eax, ecx                                      ; relative addr -> eax
 
-        lea di, [knl_tmp.disk_buf2 + PART_TBL_OFF]
+        lea di, [knl_tmp.disk_buf2 + 1BEh]
         xor cl, cl
         
 .search_in_father:

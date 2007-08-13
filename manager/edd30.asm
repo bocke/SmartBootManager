@@ -1,4 +1,3 @@
-; asmsyntax=nasm
 ;
 ; CD-ROM Boot Extension v 1.1 for Smart Boot Manager
 ; 

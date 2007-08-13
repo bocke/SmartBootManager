@@ -1,6 +1,6 @@
 ; tempdata.asm
 ;
-; some temp data for Smart Boot Manager
+; some Temporary Data for Smart Boot Manager
 ;
 ; Copyright (C) 2000, Suzhe. See file COPYING for details.
 ;
@@ -120,4 +120,3 @@ myint13h_tmp:
 .edd30_seg  resw 1
 
 %endif
-

@@ -9,6 +9,7 @@
 ;       Vienna Computer Products
 ;       Suzhe
 ;       Christopher Li
+;       Lonius
 ;       Risko Gergely
 ;       Victor O`Muerte
 ;       Dirk Knop
@@ -37,13 +38,16 @@
 ; optional Assembly:
 ; 
 ;   EMULATE_PROG
-;       if defined, creates DOS executable Test-vesions
-; 
+;       if defined, creates DOS executable Test-vesion
+;   
 ;   THEME_ZH, THEME_DE, THEME_HU, THEME_RU, THEME_CZ, THEME_ES, THEME_FR, THEME_PT, else US
 ;       language themes
 ;   
 ;   DISABLE_CDBOOT
 ;       disables CD Boot and initialization of it
+;   
+;   Y2K_BUGFIX
+;       year 2000 fix [removed since Revision 5, we write the year 2007]
 
 
 ; compile 16 bit code (Real Mode) and beware backward compatibility down to 386er
@@ -133,8 +137,6 @@ CPU 386
   ADDR_SBMK_ROOT_PASSWORD          dd        0
   ADDR_SBMK_BOOTMENU_STYLE         db        0, 0
   ADDR_SBMK_CDROM_IOPORTS          dw        0, 0
-  ADDR_SBMK_Y2K_LAST_YEAR          dw        0
-  ADDR_SBMK_Y2K_LAST_MONTH         db        0
   ADDR_SBMK_BOOT_MENU_POS          dw        0x060E
   ADDR_SBMK_MAIN_MENU_POS          dw        0x0101
   ADDR_SBMK_RECORD_MENU_POS        dw        0x0202
@@ -156,19 +158,11 @@ CPU 386
 Smart_Boot_Manager_Kernel:
 
 
-; clear the temporary data area (overwrite it with zeros)
-xor eax,eax
-mov di,Start_of_Temporary_Data_Area
-mov cx,(End_of_Temporary_Data_Area - Start_of_Temporary_Data_Area) / 4
+; install own interrupt 13h Handler [in-removing]
+mov bl,1
+call install_myint13h
 
-rep stosd
-
-
-  ; Install My Int 13H handle
-  mov bl, 1
-  call install_myint13h
-
-;Initializing the CD-ROMs..
+;Initializing the CD-ROMs.. [in reviewing]
 %ifndef DISABLE_CDBOOT
 	test byte [ADDR_SBMK_FLAGS], KNLFLAG_NOCDROM
 	jnz .not_set_cdrom_ports
@@ -207,38 +201,6 @@ rep stosd
 	jmp short .show_menu
 
 .no_first_scan:
-
-%ifdef Y2K_BUGFIX
-
-;Initialize the Y2K bug workaround stuff
-
-;Y2K fix for some BIOS which don't boot with years after 1999, we need to set
-;the year based on the last time we booted the machine
-	mov ah, 4
-	int 0x1a				;(bcd) cx=year dh=month ...
-	jc .y2k_donothing
-	mov ax,[ADDR_SBMK_Y2K_LAST_YEAR]
-	or ax,ax
-	jz .y2k_donothing
-	cmp [ADDR_SBMK_Y2K_LAST_MONTH],dh
-	je .y2k_unbug
-	jb .y2k_chmonth
-	inc ax	;we enter here only if above wich means we don't have CF
-	daa	;this is a must as daa uses CF and inc doesn't set it
-	xchg ah,al
-	adc al,0
-	daa
-	xchg ah,al
-	mov [ADDR_SBMK_Y2K_LAST_YEAR],ax
-.y2k_chmonth:
-	mov [ADDR_SBMK_Y2K_LAST_MONTH],dh
-        inc byte [main_tmp.change_occured]
-.y2k_unbug:
-	mov cx,ax
-	mov ah,5				; FIXME this can go one day
-	int 0x1a				; back if the day ends
-.y2k_donothing:
-%endif
 
 ; go ahead!
 
@@ -282,11 +244,14 @@ rep stosd
 	call main_show_disk_error
 
 %else
-; For emulator program
-	call main_init_video			; here is the code for
-	call main_init_boot_records		; emulate program.
-        call main_init_good_record_list
-	call main_do_schedule
+ 
+ ; DOS Emulation Source Code
+
+    call main_init_video
+    call main_init_boot_records
+    call main_init_good_record_list
+    call main_do_schedule
+
 %endif
 
 
@@ -336,7 +301,7 @@ rep stosd
         jmp short .halt
 
 ;=============================================================================
-;include area
+;  include area (mostly commands)
 ;=============================================================================
 
 %include "main-cmds.asm"
@@ -361,7 +326,7 @@ rep stosd
 %define RECORD_MENU_ITEMS_NUMBER 16
 %define SYS_MENU_ITEMS_NUMBER    18
 ;=============================================================================
-; Windows data
+;  Windows data
 ;=============================================================================
 main_windows_data:
 .root_window    istruc struc_window
@@ -491,7 +456,7 @@ main_windows_data:
 .end_of_windows_data:
 
 ;=============================================================================
-; Action table
+;  Action table
 ;=============================================================================
 main_action_table:
 
@@ -669,9 +634,9 @@ main_action_table:
         dw  0
         dw  main_set_cdrom_ioports
 
-        db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
-        dw  0
-        dw  main_set_y2k_year
+        ;db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
+        ;dw  0
+        ;dw  main_set_y2k_year
 
         db  0
         dw  0
@@ -775,57 +740,52 @@ main_action_table:
         dw  main_show_main_menu
 .end_of_boot_menu
 
-;END OF KERNEL
-        dw BR_GOOD_FLAG
 
-end_of_kernel:
+
+
 ;=============================================================================
-;theme data
+;  include the language theme, specified as macro definition
 ;=============================================================================
 theme_start:
 
-
 %ifdef THEME_ZH
-%include "themes/theme-zh.asm"
+ %include "themes/theme-zh.asm"
 %elifdef THEME_DE
-%include "themes/theme-de.asm"
+ %include "themes/theme-de.asm"
 %elifdef THEME_HU
-%include "themes/theme-hu.asm"
+ %include "themes/theme-hu.asm"
 %elifdef THEME_RU
-%include "themes/theme-ru.asm"
+ %include "themes/theme-ru.asm"
 %elifdef THEME_CZ
-%include "themes/theme-cz.asm"
+ %include "themes/theme-cz.asm"
 %elifdef THEME_ES
-%include "themes/theme-es.asm"
+ %include "themes/theme-es.asm"
 %elifdef THEME_FR
-%include "themes/theme-fr.asm"
+ %include "themes/theme-fr.asm"
 %elifdef THEME_PT
-%include "themes/theme-pt.asm"
+ %include "themes/theme-pt.asm"
 %else
-%include "themes/theme-us.asm"
+ %include "themes/theme-us.asm"
 %endif
 
-end_of_sbm:
-SIZE_OF_SBMK equ ($-$$)
+
+
+
+;=============================================================================
+;  Temporary Data Area (pre-initialized data)
+;=============================================================================
+ 
+%include "tempdata.asm"
+
+
+
+
 
 %ifndef EMULATE_PROG
 
+ ; make the binary (Master Boot Record) 63 sectors long (don't care about the DOS emulation exec size)
+ 
   times 63*512-($-$$) db 0
 
 %endif
 
-
-;=============================================================================
-; temp data area
-;=============================================================================
-	section .bss
-
-%ifndef EMULATE_PROG
-        resb MAX_SBM_SIZE - SIZE_OF_SBMK   ; skip enough space for theme.
-%endif
- 
-Start_of_Temporary_Data_Area:
-%include "tempdata.asm"
-End_of_Temporary_Data_Area:
-
-; vi:ts=8:et:nowrap
