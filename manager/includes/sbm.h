@@ -1,4 +1,4 @@
-; sbm.h
+; sbm.asm
 ;
 ; header file for main.asm and loader.asm
 ;

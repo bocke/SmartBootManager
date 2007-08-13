@@ -147,5 +147,5 @@ check_myint13h:
 	ret
 
 module_edd30:
-incbin "edd30.bin"
+incbin "..\binaries\edd30.bin"
 end_of_mod_edd30:

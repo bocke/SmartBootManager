@@ -7,7 +7,7 @@
 ;    
 ;       Peter Kleissner
 ;       Vienna Computer Products
-;       Suzhe
+;       James Su
 ;       Christopher Li
 ;       Lonius
 ;       Risko Gergely
@@ -19,7 +19,7 @@
 ;       Manuel Clos
 ;       Benoit Mortier
 ;       Bill Hults
-;       Andr Maldonado
+;       Andre Maldonado
 ;       Santiago Garcia Mantinan
 ;       
 ;       Thank you all.

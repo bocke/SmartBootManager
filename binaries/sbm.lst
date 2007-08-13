@@ -7,7 +7,7 @@
      7                                  ;    
      8                                  ;       Peter Kleissner
      9                                  ;       Vienna Computer Products
-    10                                  ;       Suzhe
+    10                                  ;       James Su
     11                                  ;       Christopher Li
     12                                  ;       Lonius
     13                                  ;       Risko Gergely
@@ -19,7 +19,7 @@
     19                                  ;       Manuel Clos
     20                                  ;       Benoit Mortier
     21                                  ;       Bill Hults
-    22                                  ;       Andr Maldonado
+    22                                  ;       Andre Maldonado
     23                                  ;       Santiago Garcia Mantinan
     24                                  ;       
     25                                  ;       Thank you all.
@@ -137,7 +137,7 @@
    137                              <1> %endif
    138                                  %include "ui.h"
    139                              <1> ;
-   140                              <1> ; ui.h
+   140                              <1> ; ui.asm
    141                              <1> ;
    142                              <1> ; header file for ui.asm
    143                              <1> ;
@@ -506,7 +506,7 @@
    506                              <1> %define SIZE_OF_PARTITION  (struc_partition.end_of_struc)
    507                              <1> 
    508                                  %include "sbm.h"
-   509                              <1> ; sbm.h
+   509                              <1> ; sbm.asm
    510                              <1> ;
    511                              <1> ; header file for main.asm and loader.asm
    512                              <1> ;
@@ -10802,7 +10802,7 @@
  10802 00003851 C3                  <1> 	ret
  10803                              <1> 
  10804                              <1> module_edd30:
- 10805 00003851 <incbin>            <1> incbin "edd30.bin"
+ 10805 00003851 <incbin>            <1> incbin "..\binaries\edd30.bin"
  10806                              <1> end_of_mod_edd30:
  10807                                  
  10808                                  ;=============================================================================

@@ -1,5 +1,5 @@
 ;
-; ui.h
+; ui.asm
 ;
 ; header file for ui.asm
 ;
