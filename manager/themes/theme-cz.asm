@@ -26,11 +26,6 @@ brand_char2         equ     start_font+1
 brand_char3         equ     start_font+2
 brand_char4         equ     start_font+3
 
-        bits 16
-
-%ifndef MAIN
-        org 0                       ; NEMAZTE ANI NEMENTE TENTO RADEK!!!
-%endif
 
 start_of_theme:
 

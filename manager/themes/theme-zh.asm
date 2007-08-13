@@ -14,11 +14,6 @@
                                            ; Smart Boot Manager theme.
 %define SBMT_VERSION    0x035A             ; version of theme.
 
-        bits 16
-
-%ifndef MAIN
-        org 0                       ; DO NOT REMOVE/MODIFY THIS LINE!!!
-%endif
 
 start_of_theme:
 

@@ -1154,12 +1154,87 @@ main_show_record_info:
 .flag_val	dw INFOFLAG_AUTOACTIVE, INFOFLAG_ACTIVE, INFOFLAG_AUTOHIDE, INFOFLAG_HIDDEN, INFOFLAG_SWAPDRVID
 		dw INFOFLAG_LOGICAL, INFOFLAG_HAVEKEYS
 
-       
+
+
 ;=============================================================================
-;main_power_off ---- turn of the power
+;  Shutdown ---- Shutdown the Computer via APM
 ;=============================================================================
-main_power_off:
-        jmp power_off
+Shutdown:
+
+pusha
+
+
+; check if Advanced Power Management is supported / present
+
+; APM Installation Check
+;   AH = 53h  APM
+;   AL = 00h  Installation Check
+;   BX = Power Device ID
+;        0000h  APM BIOS
+;
+;   If function successful:
+;     CF = 0   APM is supported by the BIOS
+;     AH = APM major version number (in BCD format)
+;     AL = APM minor version number (in BCD format)
+;     BX = "PM"
+;     CX = some APM flags
+;             Bit 0 = 1 16-bit protected mode interface supported
+
+mov ax,5300h
+xor bx,bx
+int 15h
+jc Shutdown_Exit
+
+cmp bx,"PM"
+jne Shutdown_Exit
+
+test cx,1
+jz Shutdown_Exit
+
+
+; connect to the APM Real Mode Interface
+
+; APM Real Mode Interface Connect
+;   AH = 53h  APM
+;   AL = 01h  Real mode interface connect
+;   BX = Power Device ID
+;        0000h  APM BIOS
+;
+;   If function successful:
+;     CF = 0
+
+mov ax,5301h
+xor bx,bx
+int 15h
+jc Shutdown_Exit
+
+
+; Shutdown all devices (including the Computer itself)
+
+; APM Set Power State
+;   AH = 53h  APM
+;   AL = 07h  Set Power State
+;   BX = Power Device ID
+;        0001h  All devices power managed by the APM BIOS
+;   CX = Power state
+;        0000h  APM Enabled
+;        0001h  Standby
+;        0002h  Suspend
+;        0003h  Off
+
+mov ax,5307h
+mov bx,0001h
+mov cx,0003h
+int 15h
+
+
+Shutdown_Exit:
+popa
+
+ret
+
+
+
 
 
 ;=============================================================================
@@ -1191,99 +1266,99 @@ main_toggle_rem_last:
 ;=============================================================================
 ;main_boot_prev_in_menu ---- boot previous MBR in command menu
 ;=============================================================================
-main_boot_prev_in_menu:
-	call check_prev_mbr
-	jc .end
-
-        call main_confirm_root_passwd
-        jc .end
-
-	call main_boot_prev_mbr
-.end:
-	ret
+;main_boot_prev_in_menu:
+;	call check_prev_mbr
+;	jc .end
+;
+;        call main_confirm_root_passwd
+;        jc .end
+;
+;	call main_boot_prev_mbr
+;.end:
+;	ret
 
 
 ;=============================================================================
 ; main_toggle_int13ext
 ;=============================================================================
-main_toggle_int13ext:
-        mov al, [ADDR_SBMK_FLAGS]
-        xor al, KNLFLAG_NOINT13EXT
-        mov [ADDR_SBMK_FLAGS], al
-
-        test al, KNLFLAG_NOINT13EXT
-        jnz .no_int13ext
-        mov byte [use_int13_ext], 1
-        jmp short .endok
-
-.no_int13ext:
-        mov byte [use_int13_ext], 0
-.endok:
-        inc byte [main_tmp.change_occured]
-        ret
+;main_toggle_int13ext:
+;        mov al, [ADDR_SBMK_FLAGS]
+;        xor al, KNLFLAG_NOINT13EXT
+;        mov [ADDR_SBMK_FLAGS], al
+;
+;        test al, KNLFLAG_NOINT13EXT
+;        jnz .no_int13ext
+;        mov byte [use_int13_ext], 1
+;        jmp short .endok
+;
+;.no_int13ext:
+;        mov byte [use_int13_ext], 0
+;.endok:
+;        inc byte [main_tmp.change_occured]
+;        ret
 
 ;=============================================================================
 ; main_set_cdrom_ioports
 ;=============================================================================
 
-main_set_cdrom_ioports:
-%ifndef DISABLE_CDBOOT
-	test byte [ADDR_SBMK_FLAGS], KNLFLAG_NOCDROM
-	jnz .end
-
-        call main_confirm_root_passwd
-        jc .end
-
-        lea di, [main_tmp.dialog_buf]
-	push di
-	mov byte [di], 0 
-	mov ax, [ADDR_SBMK_CDROM_IOPORTS]
-	or ax, ax
-	jz .no_ports
-	mov cl, 4
-	call htoa
-	add di, 4
-	mov al, ','
-	stosb
-	mov ax, [ADDR_SBMK_CDROM_IOPORTS+2]
-	call htoa
-.no_ports:
-	pop di
-
-        movzx ax, [color.input_box_msg]
-        mov bx, [color.input_box]
-        mov cx, 0x0909
-        xor dx, dx
-        mov si, [str_idx.io_port]
-	
-        call input_box
-        jc .end
-
-        mov si, di
-	call atoh
-	cmp byte [si], ','
-	jne .invalid
-	mov bx, ax
-	inc si
-	call atoh
-	cmp byte [si], 0
-	jne .invalid
-
-	mov cx, ax
-	mov [ADDR_SBMK_CDROM_IOPORTS], bx
-	mov [ADDR_SBMK_CDROM_IOPORTS+2], cx
-
-        inc byte [main_tmp.change_occured]               ; some changes occured.
-	call set_io_ports
-	jmp short .end
-
-.invalid:
-	mov si, [str_idx.invalid_ioports]
-	call error_box
-	jmp .end
-.end:
-%endif
-        ret
+;main_set_cdrom_ioports:
+;%ifndef DISABLE_CDBOOT
+;	test byte [ADDR_SBMK_FLAGS], KNLFLAG_NOCDROM
+;	jnz .end
+;
+;        call main_confirm_root_passwd
+;        jc .end
+;
+;        lea di, [main_tmp.dialog_buf]
+;	push di
+;	mov byte [di], 0 
+;	mov ax, [ADDR_SBMK_CDROM_IOPORTS]
+;	or ax, ax
+;	jz .no_ports
+;	mov cl, 4
+;	call htoa
+;	add di, 4
+;	mov al, ','
+;	stosb
+;	mov ax, [ADDR_SBMK_CDROM_IOPORTS+2]
+;	call htoa
+;.no_ports:
+;	pop di
+;
+;        movzx ax, [color.input_box_msg]
+;        mov bx, [color.input_box]
+;        mov cx, 0x0909
+;        xor dx, dx
+;        mov si, [str_idx.io_port]
+;	
+;        call input_box
+;        jc .end
+;
+;        mov si, di
+;	call atoh
+;	cmp byte [si], ','
+;	jne .invalid
+;	mov bx, ax
+;	inc si
+;	call atoh
+;	cmp byte [si], 0
+;	jne .invalid
+;
+;	mov cx, ax
+;	mov [ADDR_SBMK_CDROM_IOPORTS], bx
+;	mov [ADDR_SBMK_CDROM_IOPORTS+2], cx
+;
+;        inc byte [main_tmp.change_occured]               ; some changes occured.
+;	call set_io_ports
+;	jmp short .end
+;
+;.invalid:
+;	mov si, [str_idx.invalid_ioports]
+;	call error_box
+;	jmp .end
+;.end:
+;%endif
+;        ret
 
 ;=============================================================================
 ;main_set_y2k_year

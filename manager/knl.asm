@@ -270,7 +270,7 @@ check_bootrecord:
 	cmp bl, SPREC_POWEROFF
 	jmpne .check_prev
 
-	call check_apm_bios
+	;call check_apm_bios
 	jmp .end
 
 .check_prev:

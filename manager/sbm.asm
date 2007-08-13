@@ -83,12 +83,6 @@ CPU 386
   %define Boot_Drive            Boot_stuff+0
   %define Boot_Drive_Sector     Boot_stuff+4		; ToasterOS Standalone only
   %define Boot_Drive_Type       Boot_stuff+8		; ToasterOS Standalone only
-  %define Boot_Drive_Buffer     Boot_stuff+12		; ToasterOS Standalone only
-  %define Boot_File_Handle      Boot_stuff+51		; ToasterOS Standalone only
-  %define Temp_RM               Boot_stuff+69		; ToasterOS Standalone Bootloader only
-  %define Boot_Drive_Pointer    Boot_stuff+73		; ToasterOS Standalone only
-  %define Debug_RM              Boot_stuff+77		; triple-byte
-  %define Boot_Last_Boot_drive  Boot_stuff+78
 
 
 %ifdef EMULATE_PROG
@@ -96,8 +90,6 @@ CPU 386
 %else
 	org 0
 %endif
-
-	section .text
 
 
 %ifndef EMULATE_PROG
@@ -136,7 +128,7 @@ CPU 386
   ADDR_SBMK_DEFAULT_BOOT           db        0FFh
   ADDR_SBMK_ROOT_PASSWORD          dd        0
   ADDR_SBMK_BOOTMENU_STYLE         db        0, 0
-  ADDR_SBMK_CDROM_IOPORTS          dw        0, 0
+; ADDR_SBMK_CDROM_IOPORTS          dw        0, 0
   ADDR_SBMK_BOOT_MENU_POS          dw        0x060E
   ADDR_SBMK_MAIN_MENU_POS          dw        0x0101
   ADDR_SBMK_RECORD_MENU_POS        dw        0x0202
@@ -158,19 +150,19 @@ CPU 386
 Smart_Boot_Manager_Kernel:
 
 
-; install own interrupt 13h Handler [in-removing]
-mov bl,1
-call install_myint13h
+;; install own interrupt 13h Handler [in-removing]
+;mov bl,1
+;call install_myint13h
 
 ;Initializing the CD-ROMs.. [in reviewing]
-%ifndef DISABLE_CDBOOT
-	test byte [ADDR_SBMK_FLAGS], KNLFLAG_NOCDROM
-	jnz .not_set_cdrom_ports
-	mov bx, [ADDR_SBMK_CDROM_IOPORTS]
-	mov cx, [ADDR_SBMK_CDROM_IOPORTS+2]
-	call set_io_ports
-.not_set_cdrom_ports:
-%endif
+;%ifndef DISABLE_CDBOOT
+;	test byte [ADDR_SBMK_FLAGS], KNLFLAG_NOCDROM
+;	jnz .not_set_cdrom_ports
+;	mov bx, [ADDR_SBMK_CDROM_IOPORTS]
+;	mov cx, [ADDR_SBMK_CDROM_IOPORTS+2]
+;	call set_io_ports
+;.not_set_cdrom_ports:
+;%endif
 
 
 %ifndef EMULATE_PROG
@@ -301,7 +293,7 @@ call install_myint13h
         jmp short .halt
 
 ;=============================================================================
-;  include area (mostly commands)
+;  include area (mostly some commands)
 ;=============================================================================
 
 %include "main-cmds.asm"
@@ -479,9 +471,9 @@ main_action_table:
         dw  0
         dw  main_boot_it
 
-        db  ACTFLAG_REDRAW_WIN
-        dw  0
-        dw  main_boot_prev_in_menu
+        ;db  ACTFLAG_REDRAW_WIN
+        ;dw  0
+        ;dw  main_boot_prev_in_menu
 
         db  0
         dw  0
@@ -505,7 +497,7 @@ main_action_table:
 
         db  0
         dw  kbCtrlF12
-        dw  main_power_off
+        dw  Shutdown
 
 .end_of_main_menu
 
@@ -614,9 +606,9 @@ main_action_table:
         dw  kbCtrlL
         dw  main_toggle_rem_last
 
-        db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
-        dw  0
-        dw  main_toggle_int13ext
+        ;db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
+        ;dw  0
+        ;dw  main_toggle_int13ext
 
         db  0
         dw  0
@@ -630,17 +622,17 @@ main_action_table:
         dw  kbCtrlH
         dw  main_rescan_all_partitions
 
-        db  ACTFLAG_REDRAW_SCR
-        dw  0
-        dw  main_set_cdrom_ioports
+        ;db  ACTFLAG_REDRAW_SCR
+        ;dw  0
+        ;dw  main_set_cdrom_ioports
 
         ;db  ACTFLAG_REDRAW_SCR | ACTFLAG_AUTH_ROOT
         ;dw  0
         ;dw  main_set_y2k_year
 
-        db  0
-        dw  0
-        dw  0
+        ;db  0
+        ;dw  0
+        ;dw  0
 
         ;db  ACTFLAG_REDRAW_SCR
         ;dw  0

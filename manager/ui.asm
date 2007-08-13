@@ -23,7 +23,6 @@
 %define MENUBOX_DEF_ACTION_NUM  (menubox_def_action_table.end_of_table - menubox_def_action_table) / SIZE_OF_STRUC_ACTION
 %define LISTBOX_ACTION_NUM  (listbox_action_table.end_of_table - listbox_action_table) / SIZE_OF_STRUC_ACTION
 %define INPUTBOX_ACTION_NUM  (inputbox_action_table.end_of_table - inputbox_action_table) / SIZE_OF_STRUC_ACTION
-      bits 16
 
 
 ;=============================================================================

@@ -384,65 +384,6 @@ count_lines:
         pop si
         ret
 
-;=============================================================================
-; power_off ---- turn the power off
-;input:
-;       none
-;output:
-;       never return if successful.
-;       cf = 1 on error.
-;=============================================================================
-power_off:
-        pusha
-	call check_apm_bios
-        jc .end
-
-        mov ax, 0x5301
-        xor bx, bx
-        int 0x15
-        jc .end
-
-        mov ax, 0x5380
-        mov bh, 0x8c
-        int 0x15
-
-        mov ax, 0x40
-        mov bx, 0xd8
-        push ds
-        mov ds, ax
-        or byte [ds:bx], 0x10
-        pop ds
-
-        mov ax, 0x5307
-        mov bx, 1
-        mov cx, 3
-        int 0x15
-
-.end:
-        popa
-        ret
-
-
-;=============================================================================
-; check_apm_bios ---- check if the apm bios present
-; output:
-;	cf = 1 error, cf = 0 ok
-;=============================================================================
-check_apm_bios:
-        pusha
-        mov ax, 0x5300
-        xor bx, bx
-        int 0x15                                 ; check if apm present
-	jc .end
-	cmp bx, 0x504D
-	jnz .none
-	test cx, 1
-	jnz .end
-.none:
-	stc
-.end:
-	popa
-	ret
 
 ;=============================================================================
 ; leap_year ---- check if a year is leap a year

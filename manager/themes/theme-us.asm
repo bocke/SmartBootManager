@@ -20,6 +20,7 @@ brand_char2             equ     start_font+1
 brand_char3             equ     start_font+2
 brand_char4             equ     start_font+3
 
+
 start_of_theme:
 
 ;!!! PLEASE DON NOT CHANGE THE SIZE AND ORDER OF FOLLOWING DATA !!!

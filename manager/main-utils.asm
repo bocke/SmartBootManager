@@ -1131,7 +1131,7 @@ main_do_special_record:
 
 	cmp al, SPREC_POWEROFF
 	jne .chk_rst
-	call power_off
+	call Shutdown
 
 .chk_rst:
 	cmp al, SPREC_RESTART
@@ -1139,8 +1139,8 @@ main_do_special_record:
 	call reboot
 
 .chk_quit:
-	cmp al, SPREC_QUIT
-	jne .chk_bootprev
+;	cmp al, SPREC_QUIT
+;	jne .chk_bootprev
 
 %ifdef EMULATE_PROG
         mov ax, 0x4c00                          ; exit to dos
@@ -1149,10 +1149,10 @@ main_do_special_record:
         int 0x18                                ; return to BIOS
 %endif
 
-.chk_bootprev:
-	cmp al, SPREC_BOOTPREV
-	jne .end
-	call main_boot_prev_mbr
+;.chk_bootprev:
+;	cmp al, SPREC_BOOTPREV
+;	jne .end
+;	call main_boot_prev_mbr
 
 .end:
 	ret
@@ -1346,48 +1346,48 @@ main_hide_auto_hides:
 ;=============================================================================
 ; main_boot_prev_mbr ---- boot previous MBR
 ;=============================================================================
-main_boot_prev_mbr:
+;main_boot_prev_mbr:
 ; read partition table
-        push es
-        xor ebx, ebx
-        mov es, bx
-        mov dl, [Boot_Drive]
-        mov di, 7C00h
-        mov ax, (INT13H_READ << 8) | 0x01
-        call disk_access
-        pop es
-        jc .disk_failed
-
-        push dx
-        push di
-        call main_ask_save_changes
-        call main_hide_auto_hides
-        call reset_video_mode
-        pop di
-        pop dx
-
-	call uninstall_myint13h
-
-; copy previous mbr to Boot Offset 0x7c00
-        cld
-;        mov cx, SIZE_OF_MBR
-;        lea si, [ADDR_SBMK_PREVIOUS_MBR]
-        xor ax, ax
-        push ax
-        pop es
-        rep movsb
-
-        push ax
-        pop ds
-
-        xor bp, bp                          ; might help some boot problems
-        ;mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
-        jmp 0:7C00h                         ; jump to the  boot sector
-
-.disk_failed:
-        call main_show_disk_error
-.end:
-        ret
+;        push es
+;        xor ebx, ebx
+;        mov es, bx
+;        mov dl, [Boot_Drive]
+;        mov di, 7C00h
+;        mov ax, (INT13H_READ << 8) | 0x01
+;        call disk_access
+;        pop es
+;        jc .disk_failed
+;
+;        push dx
+;        push di
+;        call main_ask_save_changes
+;        call main_hide_auto_hides
+;        call reset_video_mode
+;        pop di
+;        pop dx
+;
+;	call uninstall_myint13h
+;
+;; copy previous mbr to Boot Offset 0x7c00
+;        cld
+;;        mov cx, SIZE_OF_MBR
+;;        lea si, [ADDR_SBMK_PREVIOUS_MBR]
+;        xor ax, ax
+;        push ax
+;        pop es
+;        rep movsb
+;
+;        push ax
+;        pop ds
+;
+;        xor bp, bp                          ; might help some boot problems
+;        ;mov ax, BR_GOOD_FLAG                ; boot signature (just in case ...)
+;        jmp 0:7C00h                         ; jump to the  boot sector
+;
+;.disk_failed:
+;        call main_show_disk_error
+;.end:
+;        ret
 
 
 ;==============================================================================

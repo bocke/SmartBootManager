@@ -25,14 +25,6 @@ brand_char3         equ     start_font+2
 brand_char4         equ     start_font+3
 
 
-        bits 16
-
-
-%ifndef MAIN
-        org 0                       ; DO NOT REMOVE/MODIFY THIS LINE!!!
-%endif
-
-
 start_of_theme:
 
 
@@ -454,15 +446,15 @@ keymap_data:
 ; use 0x0d to break string into multi-lines.
 string:
 ; used in main window and boot menu.
-.boot_menu_title                db  'Boot-Menue',0
-.boot_menu_header               db  '  Attribute '
+.boot_menu_title                db  'Boot-Menü',0
+.boot_menu_header               db  '  Attribut '
 .boot_menu_header_noflags       db  '  Nummer'
 .boot_menu_header_nonumber      db  '  Typ    '
 .boot_menu_header_notype        db  '  Name',0
 
 
 ; window titles.
-.about              db  'Ueber',0
+.about              db  'Über',0
 .error              db  'Fehler',0
 .help               db  'Hilfe',0
 .info               db  'Infomationen',0
@@ -470,7 +462,7 @@ string:
 
 
 ; used in input boxes.
-.delay_time         db  'Verzoegerungszeit: ',0
+.delay_time         db  'Verzögerungszeit: ',0
 .name               db  'Name: ',0
 .new_root_passwd    db  'Neu '
 .root_passwd        db  'Root-Passwort: ',0
@@ -478,8 +470,8 @@ string:
 .record_passwd      db  'Eintrag-Passwort: ',0
 .retype_passwd      db  'Wiederhole Passwort: ',0
 .input_schedule     db  'Zeitsteuerung(hh:mm-hh:mm;Tage): ',0
-.input_keystrokes   db  'Tastenuebergabe an OS(max.13 Tasten)',0x0d
-                    db  'Druecke <Rollen> zum Beenden,',0x0d
+.input_keystrokes   db  'Tastenuebergabe an OS (max.13 Tasten)',0x0d
+                    db  'Drücke <Rollen> zum Beenden,',0x0d
                     db  'Tastencode = 0x',0
 .key_count          db  0x0d,'Anzahl Tasten = ',0
 .io_port            db  'I/O Basisports (hex1,hex2): ',0
@@ -499,7 +491,7 @@ string:
 .hidden             db  ' Versteckt: ',0
 .swap_drv           db  0x0d,'Laufwerk tauschen: ',0
 .logical            db  '   Logisch: ',0
-.key_strokes        db  0x0d,0x0d,'Tastenuberg.: ',0
+.key_strokes        db  0x0d,0x0d,'Tastenüberg.: ',0
 .password           db  '       Passwort: ',0
 .schedule           db  0x0d,     '   Zeitgest.: ',0
 
@@ -548,9 +540,9 @@ string:
 
 
 ; normal messages.
-.changes_saved      db  'Aenderungen gespeichert.',0
+.changes_saved      db  'Änderungen gespeichert.',0
 .passwd_changed     db  'Passwort geaendert.',0
-.ask_save_changes   db  'Aenderungen Speichern (j/n)?',0
+.ask_save_changes   db  'Änderungen Speichern (j/n)?',0
 
 
 ; error messages.
@@ -560,8 +552,8 @@ string:
 .toggle_hid_failed  db  'Ent/Verstecken gescheitert!',0
 .no_system          db  'Betriebssystem fehlt!',0x0d
                     db  'Andere Diskette einlegen und nochmal versuchen.',0
-.invalid_record     db  'Ungueltiger Booteintrag!',0
-.invalid_schedule   db  'Ungueltige Zeitsteuerung!',0
+.invalid_record     db  'Ungültiger Booteintrag!',0
+.invalid_schedule   db  'Ungültige Zeitsteuerung!',0
 .inst_confirm       db  'Smart BootManager wirklich installieren',
                     db  'auf Laufwerk ',0
 .inst_ok            db  'Installation erfolgreich!',0
